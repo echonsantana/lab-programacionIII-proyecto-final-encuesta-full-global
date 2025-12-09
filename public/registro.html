@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Participante - FullGlobal</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/componentes.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js" defer></script>
+    <script src="js/registro.js" defer></script>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <header class="dashboard-header">
+            <div class="container header-content">
+                <div class="logo-brand">
+                    <div class="logo-icon">
+                        <i class="fas fa-poll"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h1>FullGlobal</h1>
+                        <p>Plataforma Profesional de Encuestas</p>
+                    </div>
+                </div>
+                
+                <nav>
+                    <ul>
+                        <li><a href="dashboard.html"><i class="fas fa-home"></i> Inicio</a></li>
+                        <li><a href="registro.html" class="active"><i class="fas fa-user-plus"></i> Registrar</a></li>
+                        <li><a href="admin-encuestas.html"><i class="fas fa-plus-circle"></i> Crear Encuesta</a></li>
+                        <li><a href="resultados.html"><i class="fas fa-chart-bar"></i> Resultados</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main class="main-content container">
+            <div class="page-header">
+                <h1><i class="fas fa-user-plus"></i> Registrar Participante</h1>
+                <p class="page-subtitle">Agrega nuevos participantes para que puedan votar en las encuestas</p>
+            </div>
+            
+            <div class="grid grid-2">
+                <!-- Formulario de Registro -->
+                <div class="form-card fade-in">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-user-circle"></i> Información del Participante</h2>
+                        <p class="card-subtitle">Todos los campos marcados con * son obligatorios</p>
+                    </div>
+                    
+                    <form id="registroForm">
+                        <div class="form-group">
+                            <label for="email" class="form-label required">
+                                <i class="fas fa-envelope"></i> Correo Electrónico
+                            </label>
+                            <input type="email" id="email" name="email" class="form-control" 
+                                   placeholder="ejemplo@correo.com" required>
+                            <small class="form-text">Este correo recibirá el enlace único para votar</small>
+                        </div>
+
+                        <div class="grid grid-2 gap-2">
+                            <div class="form-group">
+                                <label for="nombre" class="form-label required">
+                                    <i class="fas fa-user"></i> Nombre
+                                </label>
+                                <input type="text" id="nombre" name="nombre" class="form-control" 
+                                       placeholder="Juan" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="apellido" class="form-label required">
+                                    <i class="fas fa-user"></i> Apellido
+                                </label>
+                                <input type="text" id="apellido" name="apellido" class="form-control" 
+                                       placeholder="Pérez" required>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-2 gap-2">
+                            <div class="form-group">
+                                <label for="campo1" class="form-label">
+                                    <i class="fas fa-building"></i> Departamento/Área
+                                </label>
+                                <input type="text" id="campo1" name="campo1" class="form-control" 
+                                       placeholder="Ej: Recursos Humanos">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="campo2" class="form-label">
+                                    <i class="fas fa-briefcase"></i> Cargo/Puesto
+                                </label>
+                                <input type="text" id="campo2" name="campo2" class="form-control" 
+                                       placeholder="Ej: Gerente">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="campo3" class="form-label">
+                                <i class="fas fa-info-circle"></i> Información Adicional
+                            </label>
+                            <textarea id="campo3" name="campo3" class="form-control" rows="3" 
+                                      placeholder="Información adicional sobre el participante..."></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-lg btn-full">
+                                <i class="fas fa-save"></i> Registrar Participante
+                            </button>
+                            
+                            <div id="mensajeResultado" class="alert" style="display: none; margin-top: 1.5rem;"></div>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Información y lista de participantes -->
+                <div class="card fade-in" style="animation-delay: 0.1s;">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-users"></i> Participantes Registrados</h2>
+                        <p class="card-subtitle">Lista de personas que pueden participar en encuestas</p>
+                    </div>
+                    
+                    <div class="participants-list" id="participantsList">
+                        <div class="loading-state">
+                            <div class="loader"></div>
+                            <p>Cargando participantes...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <p><small><i class="fas fa-info-circle"></i> Los participantes recibirán enlaces únicos por correo para votar</small></p>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <div class="container">
+                <p><strong>FullGlobal</strong> - Plataforma de Encuestas Digitales</p>
+                <p>Proyecto Final - Laboratorio de Programación III</p>
+            </div>
+        </footer>
+    </div>
+
+    <style>
+        /* Estilos específicos para registro */
+        .page-header {
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+        
+        .page-header h1 {
+            color: var(--dark);
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .page-subtitle {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .participants-list {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+        
+        .participant-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+        
+        .participant-item:hover {
+            background: var(--light);
+            border-radius: 8px;
+        }
+        
+        .participant-info h4 {
+            margin: 0 0 0.25rem 0;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .participant-info p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .participant-email {
+            font-family: monospace;
+            background: var(--light);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .loading-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--gray-light);
+        }
+        
+        .form-actions {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--gray-light);
+        }
+        
+        @media (max-width: 992px) {
+            .grid.grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    
+    <script>
+        // Script para cargar lista de participantes
+        document.addEventListener('DOMContentLoaded', async function() {
+            await cargarParticipantes();
+            
+            async function cargarParticipantes() {
+                try {
+                    const { data: participantes, error } = await supabase
+                        .from('participantes')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+                    
+                    const container = document.getElementById('participantsList');
+                    
+                    if (error) {
+                        container.innerHTML = `
+                            <div class="alert alert-error">
+                                <div class="alert-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="alert-content">
+                                    <p class="alert-title">Error al cargar participantes</p>
+                                    <p class="alert-message">${error.message}</p>
+                                </div>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    if (!participantes || participantes.length === 0) {
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-user-friends"></i>
+                                <h3>No hay participantes registrados</h3>
+                                <p>Registra el primer participante usando el formulario</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    let html = '';
+                    participantes.forEach(p => {
+                        html += `
+                            <div class="participant-item">
+                                <div class="participant-info">
+                                    <h4>
+                                        <i class="fas fa-user"></i>
+                                        ${p.nombre} ${p.apellido}
+                                    </h4>
+                                    <p>
+                                        <span class="participant-email">${p.email}</span>
+                                        ${p.campo1 ? ` • ${p.campo1}` : ''}
+                                        ${p.campo2 ? ` • ${p.campo2}` : ''}
+                                    </p>
+                                </div>
+                                <div class="badge badge-primary">
+                                    Registrado
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    container.innerHTML = html;
+                    
+                } catch (error) {
+                    console.error('Error cargando participantes:', error);
+                    document.getElementById('participantsList').innerHTML = `
+                        <div class="alert alert-error">
+                            <div class="alert-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="alert-content">
+                                <p class="alert-title">Error inesperado</p>
+                                <p class="alert-message">${error.message}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

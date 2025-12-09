@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FullGlobal - Plataforma de Votación Digital</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/componentes.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Estilos específicos para landing page */
+        :root {
+            --primary: #4c51bf;
+            --primary-dark: #434190;
+            --secondary: #805ad5;
+            --light: #f7fafc;
+            --dark: #2d3748;
+            --gray: #718096;
+        }
+        
+        .landing-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .landing-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff10" fill-opacity="1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,192C672,181,768,139,864,138.7C960,139,1056,181,1152,181.3C1248,181,1344,139,1392,117.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .enter-btn {
+            background: white;
+            color: var(--primary);
+            font-size: 1.3rem;
+            padding: 1.2rem 3rem;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+            50% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
+            100% { transform: scale(1); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        }
+        
+        .enter-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: none;
+        }
+        
+        .team-section {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-top: 3rem;
+            text-align: left;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .team-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .team-member {
+            background: rgba(255,255,255,0.15);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .team-member:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-5px);
+        }
+        
+        .team-member h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
+        }
+        
+        .team-member h4 i {
+            color: #ffd700;
+        }
+        
+        .team-member p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .matricula {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+            text-align: left;
+        }
+        
+        .feature {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .feature i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #ffd700;
+        }
+        
+        .feature h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+        
+        .instructions {
+            color: white;
+            margin-top: 4rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            text-align: center;
+        }
+        
+        .key-hint {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            margin: 0 0.5rem;
+            font-family: monospace;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .team-section {
+                padding: 1.5rem;
+            }
+            
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .enter-btn {
+                padding: 1rem 2rem;
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .logo {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Page -->
+    <div id="landingPage">
+        <header class="landing-header">
+            <div class="hero-content">
+                <div class="logo">
+                    <i class="fas fa-poll"></i>
+                </div>
+                <h1 class="hero-title">FullGlobal</h1>
+                <p class="hero-subtitle">Plataforma profesional de votación y encuestas digitales para instituciones educativas y organizaciones</p>
+                
+                <a href="dashboard.html" class="enter-btn">
+                    <i class="fas fa-sign-in-alt"></i> ENTRAR AL SISTEMA
+                </a>
+                
+                <div class="team-section">
+                    <h2 class="team-title">
+                        <i class="fas fa-users"></i> Equipo de Desarrollo
+                    </h2>
+                    <div class="team-grid">
+                        <div class="team-member">
+                            <h4><i class="fas fa-user-graduate"></i> Odiseo Garcia Santos</h4>
+                            <p>Desarrollador Frontend</p>
+                            <span class="matricula">MAT: 100574485</span>
+                        </div>
+                        <div class="team-member">
+                            <h4><i class="fas fa-user-graduate"></i> María Teresa Soriano</h4>
+                            <p>Diseñadora UX/UI</p>
+                            <span class="matricula">MAT: 100564584</span>
+                        </div>
+                        <div class="team-member">
+                            <h4><i class="fas fa-user-graduate"></i> Edidson Rodriguez Santana</h4>
+                            <p>Desarrollador Backend</p>
+                            <span class="matricula">MAT: 100053133</span>
+                        </div>
+                        <div class="team-member">
+                            <h4><i class="fas fa-user-graduate"></i> Roberto Iván Frías Rosario</h4>
+                            <p>Administrador de Base de Datos</p>
+                            <span class="matricula">MAT: EW7436</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="features">
+                    <div class="feature">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>Votación Segura</h3>
+                        <p>Enlaces únicos y verificación de identidad para cada participante</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-chart-bar"></i>
+                        <h3>Resultados en Tiempo Real</h3>
+                        <p>Visualización instantánea con gráficos interactivos</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-envelope"></i>
+                        <h3>Envío Automatizado</h3>
+                        <p>Invitaciones por correo con enlaces personalizados</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h3>Totalmente Responsive</h3>
+                        <p>Funciona en computadoras, tablets y teléfonos móviles</p>
+                    </div>
+                </div>
+                
+                <p class="instructions">
+                    Presiona <span class="key-hint">ENTER</span> o <span class="key-hint">CUALQUIER TECLA</span> para acceder al sistema
+                    <br>o haz clic en el botón "ENTRAR AL SISTEMA"
+                </p>
+            </div>
+        </header>
+    </div>
+
+    <script>
+        // Redirigir al dashboard al presionar cualquier tecla
+        document.addEventListener('keydown', function(e) {
+            // Solo redirigir si no es una tecla especial (Ctrl, Alt, etc.)
+            if (!e.ctrlKey && !e.altKey && !e.metaKey) {
+                window.location.href = 'dashboard.html';
+            }
+        });
+        
+        // También redirigir al hacer clic en cualquier parte del header
+        document.querySelector('.landing-header').addEventListener('click', function(e) {
+            // Solo redirigir si no se hizo clic en un enlace o botón
+            if (!e.target.closest('a') && !e.target.closest('button')) {
+                window.location.href = 'dashboard.html';
+            }
+        });
+        
+        // Efecto de escritura para el subtítulo (opcional)
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 FullGlobal - Plataforma de Encuestas Digitales');
+            console.log('👥 Equipo: Edidson, Maria, Odiseo , Roberto');
+            console.log('📚 Proyecto Final - Laboratorio de Programación III');
+        });
+    </script>
+</body>
+</html>

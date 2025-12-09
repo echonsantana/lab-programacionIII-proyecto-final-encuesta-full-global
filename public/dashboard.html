@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FullGlobal</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/componentes.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Estilos mejorados para dashboard */
+        :root {
+            --primary: #4c51bf;
+            --primary-dark: #434190;
+            --secondary: #805ad5;
+            --success: #38a169;
+            --warning: #d69e2e;
+            --danger: #e53e3e;
+            --light: #f7fafc;
+            --dark: #2d3748;
+            --gray: #718096;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 20px rgba(76, 81, 191, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+        }
+        
+        .brand-text h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            font-weight: 700;
+        }
+        
+        .brand-text p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+            margin: 0;
+            padding: 0;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        nav a:hover, nav a.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .main-content {
+            padding: 2rem 0;
+        }
+        
+        .welcome-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--primary);
+        }
+        
+        .welcome-section h2 {
+            color: var(--dark);
+            margin-top: 0;
+            font-size: 2rem;
+        }
+        
+        .welcome-section p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 700px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            border-top: 4px solid var(--primary);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .stat-content h3 {
+            margin: 0 0 0.5rem 0;
+            color: var(--dark);
+            font-size: 1.8rem;
+        }
+        
+        .stat-content p {
+            margin: 0;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        .quick-actions {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .quick-actions h3 {
+            margin-top: 0;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: var(--light);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--dark);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .action-btn:hover {
+            background: white;
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .action-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .action-btn span {
+            font-weight: 600;
+        }
+        
+        .recent-activity {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .activity-list {
+            margin-top: 1rem;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+        
+        .footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .welcome-section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <header class="dashboard-header">
+            <div class="container header-content">
+                <div class="logo-brand">
+                    <div class="logo-icon">
+                        <i class="fas fa-poll"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h1>FullGlobal</h1>
+                        <p>Plataforma Profesional de Encuestas</p>
+                    </div>
+                </div>
+                
+                <nav>
+                    <ul>
+                        <li><a href="dashboard.html" class="active"><i class="fas fa-home"></i> Inicio</a></li>
+                        <li><a href="registro.html"><i class="fas fa-user-plus"></i> Registrar</a></li>
+                        <li><a href="admin-encuestas.html"><i class="fas fa-plus-circle"></i> Crear Encuesta</a></li>
+                        <li><a href="resultados.html"><i class="fas fa-chart-bar"></i> Resultados</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main class="main-content container">
+            <section class="welcome-section">
+                <h2>👋 ¡Bienvenido al Sistema de Encuestas!</h2>
+                <p>Una plataforma completa para crear, gestionar y analizar encuestas digitales de manera profesional y segura.</p>
+            </section>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalParticipantes">0</h3>
+                        <p>Participantes Registrados</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-poll-h"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalEncuestas">0</h3>
+                        <p>Encuestas Activas</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-vote-yea"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalVotos">0</h3>
+                        <p>Votos Registrados</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="porcentajeParticipacion">0%</h3>
+                        <p>Tasa de Participación</p>
+                    </div>
+                </div>
+            </div>
+            
+            <section class="quick-actions">
+                <h3><i class="fas fa-bolt"></i> Acciones Rápidas</h3>
+                <div class="action-buttons">
+                    <a href="registro.html" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <span>Registrar Participante</span>
+                    </a>
+                    
+                    <a href="admin-encuestas.html" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <span>Crear Nueva Encuesta</span>
+                    </a>
+                    
+                    <a href="admin-encuestas.html#contenedorEnlaces" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <span>Enviar Invitaciones</span>
+                    </a>
+                    
+                    <a href="resultados.html" class="action-btn">
+                        <div class="action-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <span>Ver Resultados</span>
+                    </a>
+                </div>
+            </section>
+            
+            <section class="recent-activity">
+                <h3><i class="fas fa-history"></i> Actividad Reciente</h3>
+                <div class="activity-list" id="activityList">
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-spinner"></i>
+                        </div>
+                        <div>
+                            <p>Cargando actividad reciente...</p>
+                            <small>Cargando...</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="footer">
+            <div class="container">
+                
+                <p>Proyecto Final - Laboratorio de Programación III</p>
+                <p>Equipo: Edidson | Maria | Odiseo | Roberto</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('📊 Dashboard cargado');
+            
+            // Cargar estadísticas
+            await cargarEstadisticas();
+            await cargarActividadReciente();
+            
+            async function cargarEstadisticas() {
+                try {
+                    // Total de participantes
+                    const { count: totalParticipantes } = await supabase
+                        .from('participantes')
+                        .select('*', { count: 'exact', head: true });
+                    
+                    document.getElementById('totalParticipantes').textContent = totalParticipantes || 0;
+                    
+                    // Total de encuestas activas
+                    const { count: totalEncuestas } = await supabase
+                        .from('encuestas')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('activa', true);
+                    
+                    document.getElementById('totalEncuestas').textContent = totalEncuestas || 0;
+                    
+                    // Total de votos
+                    const { count: totalVotos } = await supabase
+                        .from('votos')
+                        .select('*', { count: 'exact', head: true });
+                    
+                    document.getElementById('totalVotos').textContent = totalVotos || 0;
+                    
+                    // Calcular porcentaje de participación
+                    if (totalParticipantes > 0 && totalVotos > 0) {
+                        const porcentaje = Math.round((totalVotos / totalParticipantes) * 100);
+                        document.getElementById('porcentajeParticipacion').textContent = porcentaje + '%';
+                    } else {
+                        document.getElementById('porcentajeParticipacion').textContent = '0%';
+                    }
+                    
+                } catch (error) {
+                    console.error('Error cargando estadísticas:', error);
+                }
+            }
+            
+            async function cargarActividadReciente() {
+                try {
+                    const activityList = document.getElementById('activityList');
+                    
+                    // Obtener encuestas recientes
+                    const { data: encuestas } = await supabase
+                        .from('encuestas')
+                        .select('*')
+                        .order('created_at', { ascending: false })
+                        .limit(3);
+                    
+                    // Obtener votos recientes
+                    const { data: votos } = await supabase
+                        .from('votos')
+                        .select('*, opciones(nombre_opcion), encuestas(titulo)')
+                        .order('created_at', { ascending: false })
+                        .limit(3);
+                    
+                    let html = '';
+                    
+                    // Mostrar encuestas recientes
+                    if (encuestas && encuestas.length > 0) {
+                        encuestas.forEach(encuesta => {
+                            html += `
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="fas fa-poll" style="color: #4c51bf;"></i>
+                                    </div>
+                                    <div>
+                                        <p><strong>Nueva encuesta creada:</strong> ${encuesta.titulo}</p>
+                                        <small>${new Date(encuesta.created_at).toLocaleDateString('es-ES')}</small>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    // Mostrar votos recientes
+                    if (votos && votos.length > 0) {
+                        votos.forEach(voto => {
+                            html += `
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="fas fa-vote-yea" style="color: #38a169;"></i>
+                                    </div>
+                                    <div>
+                                        <p><strong>Nuevo voto registrado</strong> en ${voto.encuestas?.titulo || 'Encuesta'}</p>
+                                        <small>Opción: ${voto.opciones?.nombre_opcion || 'No disponible'}</small>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    if (html === '') {
+                        html = `
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div>
+                                    <p>No hay actividad reciente</p>
+                                    <small>Crea una encuesta o registra participantes para comenzar</small>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    activityList.innerHTML = html;
+                    
+                } catch (error) {
+                    console.error('Error cargando actividad:', error);
+                    document.getElementById('activityList').innerHTML = `
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-exclamation-triangle" style="color: #e53e3e;"></i>
+                            </div>
+                            <div>
+                                <p>Error al cargar actividad</p>
+                                <small>${error.message}</small>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

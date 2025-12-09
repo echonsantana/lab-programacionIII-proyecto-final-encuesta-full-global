@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Enviar Correos Reales</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .participante { padding: 10px; margin: 5px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        .btn-enviar { background: #4285F4; color: white; border: none; }
+        .btn-copiar { background: #34A853; color: white; border: none; }
+    </style>
+</head>
+<body>
+    <h1>📧 Enviar Correos REALES</h1>
+    
+    <div>
+        <button onclick="cargarDatos()" class="btn-enviar">📋 Cargar Participantes</button>
+        <button onclick="enviarTodos()" class="btn-enviar" style="background: #EA4335;">📤 Enviar a TODOS</button>
+    </div>
+    
+    <div id="participantesList" style="margin-top: 20px;"></div>
+    
+    <script>
+    let participantesData = [];
+    let encuestaData = null;
+    
+    async function cargarDatos() {
+        // 1. Cargar participantes
+        const { data: participantes } = await supabase
+            .from('participantes')
+            .select('email, nombre, apellido');
+        
+        // 2. Cargar última encuesta activa
+        const { data: encuestas } = await supabase
+            .from('encuestas')
+            .select('id, titulo, descripcion')
+            .eq('activa', true)
+            .order('created_at', { ascending: false })
+            .limit(1);
+        
+        if (!encuestas || encuestas.length === 0) {
+            alert('⚠️ Crea una encuesta activa primero');
+            return;
+        }
+        
+        encuestaData = encuestas[0];
+        participantesData = participantes;
+        
+        mostrarParticipantes();
+    }
+    
+    function mostrarParticipantes() {
+        const baseUrl = window.location.origin;
+        let html = `<h3>👥 ${participantesData.length} Participantes</h3>`;
+        
+        participantesData.forEach(p => {
+            const enlace = `${baseUrl}/votacion.html?email=${encodeURIComponent(p.email)}&encuesta_id=${encuestaData.id}`;
+            
+            html += `
+                <div class="participante">
+                    <strong>${p.nombre} ${p.apellido}</strong><br>
+                    <small>${p.email}</small><br>
+                    
+                    <div style="margin-top: 5px;">
+                        <button class="btn-enviar" onclick="enviarCorreoIndividual('${p.email}', '${p.nombre}', '${enlace}')">
+                            📧 Enviar Correo
+                        </button>
+                        
+                        <button class="btn-copiar" onclick="abrirGmail('${p.email}', '${p.nombre}', '${enlace}')">
+                            ✉️ Abrir Gmail
+                        </button>
+                        
+                        <button onclick="copiarEnlace('${enlace}')">📋 Copiar Enlace</button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        document.getElementById('participantesList').innerHTML = html;
+    }
+    
+    // ========================
+    // OPCIÓN 1: Abrir Gmail con datos prellenados
+    // ========================
+    function abrirGmail(email, nombre, enlace) {
+        const asunto = `Invitación a votar: ${encuestaData.titulo}`;
+        const cuerpo = `Hola ${nombre},\n\nHas sido invitado a votar en: "${encuestaData.titulo}"\n\nAccede aquí: ${enlace}\n\nEste enlace es personal e intransferible.`;
+        
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+        
+        window.open(gmailUrl, '_blank');
+    }
+    
+    // ========================
+    // OPCIÓN 2: Enviar con EmailJS (SIMPLIFICADO)
+    // ========================
+    async function enviarCorreoIndividual(email, nombre, enlace) {
+        // PRIMERO: Configuración RÁPIDA de EmailJS
+        const emailjsConfig = {
+            serviceId: 'default_service',  // Puedes usar este por defecto
+            templateId: 'template_abc123', // Lo creas en 2 minutos
+            userId: 'user_xxxxxxxxxx'      // Lo obtienes gratis
+        };
+        
+        // Verificar si está configurado
+        if (emailjsConfig.userId === 'user_xxxxxxxxxx') {
+            alert('⚠️ Configura EmailJS primero (2 minutos):\n\n1. Ve a https://www.emailjs.com\n2. Regístrate (gratis)\n3. Copia tu User ID\n4. Pégala en este código');
+            
+            // Mostrar tutorial rápido
+            const config = confirm('¿Quieres ver un tutorial rápido de 2 minutos?');
+            if (config) {
+                window.open('https://www.emailjs.com/docs/tutorial/overview/', '_blank');
+            }
+            return;
+        }
+        
+        try {
+            // Cargar EmailJS dinámicamente
+            if (!window.emailjs) {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js';
+                script.onload = () => {
+                    emailjs.init(emailjsConfig.userId);
+                    enviarCorreo(email, nombre, enlace);
+                };
+                document.head.appendChild(script);
+            } else {
+                enviarCorreo(email, nombre, enlace);
+            }
+        } catch (error) {
+            alert('Usa la opción "Abrir Gmail" mientras configuras EmailJS');
+        }
+    }
+    
+    async function enviarCorreo(email, nombre, enlace) {
+        const templateParams = {
+            to_email: email,
+            nombre: nombre,
+            encuesta_titulo: encuestaData.titulo,
+            enlace_votacion: enlace
+        };
+        
+        try {
+            await emailjs.send(
+                'default_service',  // Tu Service ID
+                'template_abc123',  // Tu Template ID
+                templateParams
+            );
+            alert(`✅ Correo enviado a ${nombre}`);
+        } catch (error) {
+            alert(`❌ Error: ${error.text || error.message}`);
+        }
+    }
+    
+    // ========================
+    // OPCIÓN 3: Enviar a TODOS
+    // ========================
+    async function enviarTodos() {
+        if (!confirm(`¿Enviar correos a ${participantesData.length} participantes?`)) return;
+        
+        for (let i = 0; i < participantesData.length; i++) {
+            const p = participantesData[i];
+            const enlace = `${window.location.origin}/votacion.html?email=${encodeURIComponent(p.email)}&encuesta_id=${encuestaData.id}`;
+            
+            // Usar Gmail (más confiable)
+            abrirGmail(p.email, p.nombre, enlace);
+            
+            // Pequeña pausa para no saturar
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
+        alert(`✅ Se abrieron ${participantesData.length} ventanas de Gmail. Envía cada correo manualmente.`);
+    }
+    
+    function copiarEnlace(enlace) {
+        navigator.clipboard.writeText(enlace);
+        alert('✅ Enlace copiado al portapapeles');
+    }
+    </script>
+</body>
+</html>

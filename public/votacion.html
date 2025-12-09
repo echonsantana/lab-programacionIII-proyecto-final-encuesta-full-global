@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votar en Encuesta - FullGlobal</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/componentes.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js" defer></script>
+    <script src="js/votacion.js" defer></script>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <header class="dashboard-header">
+            <div class="container header-content">
+                <div class="logo-brand">
+                    <div class="logo-icon">
+                        <i class="fas fa-poll"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h1>FullGlobal</h1>
+                        <p>Plataforma Profesional de Encuestas</p>
+                    </div>
+                </div>
+                
+                <nav>
+                    <ul>
+                        <li><a href="dashboard.html"><i class="fas fa-home"></i> Inicio</a></li>
+                        <li><a href="registro.html"><i class="fas fa-user-plus"></i> Registrar</a></li>
+                        <li><a href="admin-encuestas.html"><i class="fas fa-plus-circle"></i> Crear Encuesta</a></li>
+                        <li><a href="resultados.html"><i class="fas fa-chart-bar"></i> Resultados</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main class="main-content container">
+            <div class="voting-container">
+                <div class="form-card fade-in">
+                    <div class="voting-header">
+                        <div class="voting-icon">
+                            <i class="fas fa-vote-yea"></i>
+                        </div>
+                        <div>
+                            <h1 id="tituloEncuesta">Cargando encuesta...</h1>
+                            <p id="descripcionEncuesta" class="voting-subtitle"></p>
+                        </div>
+                    </div>
+                    
+                    <div id="contenidoVotacion">
+                        <div class="loading-state">
+                            <div class="loader"></div>
+                            <p>Verificando información de votación...</p>
+                            <p class="loading-details" id="estadoCarga">Iniciando verificación</p>
+                        </div>
+                    </div>
+                    
+                    <div id="mensajeResultado" class="alert" style="display: none;"></div>
+                </div>
+                
+                <!-- Panel de información lateral -->
+                <div class="info-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-info-circle"></i> Información Importante</h3>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div>
+                                <h4>Voto Seguro</h4>
+                                <p>Tu voto es anónimo y seguro. Solo se registra que has votado, no cómo votaste.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div>
+                                <h4>Identificación Única</h4>
+                                <p>Este enlace es personal e intransferible. Solo puedes votar una vez.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <h4>Tiempo Limitado</h4>
+                                <p>Tu sesión de votación es temporal. Completa tu voto ahora.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <div class="container">
+                <p><strong>FullGlobal</strong> - Plataforma de Encuestas Digitales</p>
+                <p>Proyecto Final - Laboratorio de Programación III</p>
+            </div>
+        </footer>
+    </div>
+
+    <style>
+        /* Estilos específicos para votación */
+        .voting-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+        
+        .voting-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--light);
+        }
+        
+        .voting-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .voting-header h1 {
+            margin: 0;
+            color: var(--dark);
+            font-size: 2rem;
+        }
+        
+        .voting-subtitle {
+            color: var(--gray);
+            margin-top: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .loading-state {
+            text-align: center;
+            padding: 3rem;
+        }
+        
+        .loading-details {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        .info-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-light);
+            position: sticky;
+            top: 100px;
+        }
+        
+        .info-content {
+            margin-top: 1rem;
+        }
+        
+        .info-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--light);
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(76, 81, 191, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+        
+        .info-item h4 {
+            margin: 0 0 0.25rem 0;
+            color: var(--dark);
+            font-size: 1rem;
+        }
+        
+        .info-item p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        /* Estilos para opciones de votación */
+        .opcion-voto {
+            padding: 1.25rem;
+            border: 2px solid var(--gray-light);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            background: white;
+        }
+        
+        .opcion-voto:hover {
+            border-color: var(--primary);
+            background: rgba(76, 81, 191, 0.02);
+        }
+        
+        .opcion-voto.selected {
+            border-color: var(--primary);
+            background: rgba(76, 81, 191, 0.05);
+            box-shadow: 0 5px 15px rgba(76, 81, 191, 0.1);
+        }
+        
+        .opcion-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .opcion-selector {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--gray-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+        
+        .opcion-voto.selected .opcion-selector {
+            border-color: var(--primary);
+            background: var(--primary);
+        }
+        
+        .opcion-voto.selected .opcion-selector::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+        }
+        
+        .opcion-text h4 {
+            margin: 0 0 0.25rem 0;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+        
+        .opcion-text p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        .voter-info {
+            background: var(--light);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .voter-info p {
+            margin: 0;
+            color: var(--dark);
+        }
+        
+        @media (max-width: 992px) {
+            .voting-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .info-card {
+                position: static;
+                order: -1;
+            }
+            
+            .voting-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+        }
+    </style>
+    
+    <script>
+        // Función global para seleccionar opción
+        window.seleccionarOpcion = function(elemento, opcionId) {
+            // Deseleccionar todas
+            document.querySelectorAll('.opcion-voto').forEach(op => {
+                op.classList.remove('selected');
+            });
+            
+            // Seleccionar esta
+            elemento.classList.add('selected');
+            
+            // Actualizar input hidden
+            const inputOpcion = document.getElementById('opcionSeleccionada');
+            if (inputOpcion) {
+                inputOpcion.value = opcionId;
+            }
+            
+            // Habilitar botón de votar
+            const btnVotar = document.getElementById('btnVotar');
+            const btnTexto = document.getElementById('btnTexto');
+            if (btnVotar && btnTexto) {
+                btnVotar.disabled = false;
+                btnTexto.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar mi voto';
+            }
+        };
+    </script>
+</body>
+</html>

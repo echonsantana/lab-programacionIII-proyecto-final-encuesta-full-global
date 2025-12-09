@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionar Encuestas - EncuestaPro</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/componentes.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js" defer></script>
+    <script src="js/admin.js" defer></script>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <header class="dashboard-header">
+            <div class="container header-content">
+                <div class="logo-brand">
+                    <div class="logo-icon">
+                        <i class="fas fa-poll"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h1>EncuestaPro</h1>
+                        <p>Plataforma Profesional de Encuestas</p>
+                    </div>
+                </div>
+                
+                <nav>
+                    <ul>
+                        <li><a href="dashboard.html"><i class="fas fa-home"></i> Inicio</a></li>
+                        <li><a href="registro.html"><i class="fas fa-user-plus"></i> Registrar</a></li>
+                        <li><a href="admin-encuestas.html" class="active"><i class="fas fa-plus-circle"></i> Crear Encuesta</a></li>
+                        <li><a href="resultados.html"><i class="fas fa-chart-bar"></i> Resultados</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main class="main-content container">
+            <div class="page-header">
+                <h1><i class="fas fa-poll-h"></i> Gestionar Encuestas</h1>
+                <p class="page-subtitle">Crea encuestas, agrega opciones y envía invitaciones a participantes</p>
+            </div>
+            
+            <!-- Pestañas -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <button class="tab active" data-tab="crear-encuesta">
+                        <i class="fas fa-plus-circle"></i> Crear Encuesta
+                    </button>
+                    <button class="tab" data-tab="agregar-opciones">
+                        <i class="fas fa-list-ul"></i> Agregar Opciones
+                    </button>
+                    <button class="tab" data-tab="enviar-invitaciones">
+                        <i class="fas fa-envelope"></i> Enviar Invitaciones
+                    </button>
+                    <button class="tab" data-tab="ver-encuestas">
+                        <i class="fas fa-eye"></i> Ver Encuestas
+                    </button>
+                </div>
+                
+                <!-- Contenido de pestañas -->
+                <div class="tab-content active" id="crear-encuesta">
+                    <div class="form-card fade-in">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fas fa-edit"></i> Crear Nueva Encuesta</h2>
+                            <p class="card-subtitle">Define el título, descripción y estado de la encuesta</p>
+                        </div>
+                        
+                        <form id="formEncuesta">
+                            <div class="form-group">
+                                <label for="titulo" class="form-label required">
+                                    <i class="fas fa-heading"></i> Título de la Encuesta
+                                </label>
+                                <input type="text" id="titulo" name="titulo" class="form-control" 
+                                       placeholder="Ej: Elecciones de Representante Estudiantil" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="descripcion" class="form-label">
+                                    <i class="fas fa-align-left"></i> Descripción
+                                </label>
+                                <textarea id="descripcion" name="descripcion" class="form-control" 
+                                          rows="4" placeholder="Describe el propósito y objetivos de esta encuesta..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox" id="activa" name="activa" checked>
+                                    <span class="checkmark"></span>
+                                    <span class="checkbox-text">
+                                        <i class="fas fa-toggle-on"></i> Encuesta activa (los participantes pueden votar)
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-check-circle"></i> Crear Encuesta
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="agregar-opciones">
+                    <div class="form-card fade-in">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fas fa-list-ol"></i> Agregar Opciones/Aspirantes</h2>
+                            <p class="card-subtitle">Añade las opciones de votación para una encuesta existente</p>
+                        </div>
+                        
+                        <form id="formOpcion">
+                            <div class="form-group">
+                                <label for="encuestaSelect" class="form-label required">
+                                    <i class="fas fa-poll-h"></i> Seleccionar Encuesta
+                                </label>
+                                <select id="encuestaSelect" name="encuesta_id" class="form-control form-select" required>
+                                    <option value="">Cargando encuestas...</option>
+                                </select>
+                            </div>
+
+                            <div class="grid grid-2 gap-2">
+                                <div class="form-group">
+                                    <label for="nombreOpcion" class="form-label required">
+                                        <i class="fas fa-font"></i> Nombre de la Opción
+                                    </label>
+                                    <input type="text" id="nombreOpcion" name="nombre_opcion" class="form-control" 
+                                           placeholder="Ej: Candidato A" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="orden" class="form-label">
+                                        <i class="fas fa-sort-numeric-down"></i> Orden de aparición
+                                    </label>
+                                    <input type="number" id="orden" name="orden" class="form-control" 
+                                           value="0" min="0">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="descripcionOpcion" class="form-label">
+                                    <i class="fas fa-align-left"></i> Descripción (Opcional)
+                                </label>
+                                <textarea id="descripcionOpcion" name="descripcion" class="form-control" 
+                                          rows="3" placeholder="Información adicional sobre esta opción..."></textarea>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-plus-circle"></i> Agregar Opción
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="enviar-invitaciones">
+                    <div class="form-card fade-in">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fas fa-paper-plane"></i> Generar y Enviar Invitaciones</h2>
+                            <p class="card-subtitle">Genera enlaces únicos y envíalos directamente por correo</p>
+                        </div>
+                        
+                        <div class="grid grid-2 gap-2 mb-3">
+                            <div class="form-group">
+                                <label for="selectParticipanteEnlace" class="form-label required">
+                                    <i class="fas fa-user"></i> Participante
+                                </label>
+                                <select id="selectParticipanteEnlace" class="form-control form-select" required>
+                                    <option value="">Cargando participantes...</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="selectEncuestaEnlace" class="form-label required">
+                                    <i class="fas fa-poll-h"></i> Encuesta
+                                </label>
+                                <select id="selectEncuestaEnlace" class="form-control form-select" required>
+                                    <option value="">Cargando encuestas...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button id="btnGenerarEnlace" class="btn btn-primary btn-lg btn-full mb-3">
+                            <i class="fas fa-link"></i> Generar Enlace de Votación
+                        </button>
+                        
+                        <div id="contenedorEnlaces">
+                            <div class="empty-state" id="sinEnlaces">
+                                <i class="fas fa-envelope-open-text"></i>
+                                <h3>No hay enlaces generados</h3>
+                                <p>Selecciona un participante y una encuesta para generar enlaces de votación</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="ver-encuestas">
+                    <div class="form-card fade-in">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fas fa-clipboard-list"></i> Encuestas Creadas</h2>
+                            <p class="card-subtitle">Todas las encuestas con sus opciones configuradas</p>
+                        </div>
+                        
+                        <div id="listaEncuestas">
+                            <div class="loading-state">
+                                <div class="loader"></div>
+                                <p>Cargando encuestas...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <div class="container">
+                <p><strong>EncuestaPro</strong> - Plataforma de Encuestas Digitales</p>
+                <p>Proyecto Final - Laboratorio de Programación III</p>
+            </div>
+        </footer>
+    </div>
+
+    <style>
+        /* Estilos específicos para admin encuestas */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            color: var(--dark);
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .page-subtitle {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 700px;
+        }
+        
+        .tabs-container {
+            margin-top: 1rem;
+        }
+        
+        .enlace-contenedor {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--gray-light);
+            transition: var(--transition);
+        }
+        
+        .enlace-contenedor:hover {
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(76, 81, 191, 0.1);
+        }
+        
+        .enlace-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .enlace-header h4 {
+            margin: 0;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .enlace-codigo {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            border: 1px solid var(--gray-light);
+            margin: 1rem 0;
+            background: #f8f9fa;
+        }
+        
+        .botones-accion {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .btn-correo {
+            background: #4285F4;
+            color: white;
+            border: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        
+        .btn-correo:hover {
+            background: #3367D6;
+            transform: translateY(-2px);
+        }
+        
+        .btn-copiar {
+            background: #34A853;
+            color: white;
+            border: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        
+        .btn-copiar:hover {
+            background: #2E8B47;
+            transform: translateY(-2px);
+        }
+        
+        .participante-info {
+            color: var(--gray);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .participante-info strong {
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--gray-light);
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+        
+        .survey-item {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid var(--gray-light);
+            border-radius: 12px;
+            background: white;
+            transition: var(--transition);
+        }
+        
+        .survey-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(76, 81, 191, 0.1);
+        }
+        
+        .survey-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .survey-title {
+            margin: 0;
+            color: var(--dark);
+            font-size: 1.3rem;
+        }
+        
+        .survey-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .survey-status.active {
+            background: rgba(56, 161, 105, 0.15);
+            color: var(--success);
+        }
+        
+        .survey-status.inactive {
+            background: rgba(229, 62, 62, 0.15);
+            color: var(--danger);
+        }
+        
+        .survey-description {
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+        
+        .survey-options {
+            background: var(--light);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .survey-options h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--dark);
+            font-size: 1rem;
+        }
+        
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .option-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .option-item:last-child {
+            border-bottom: none;
+        }
+        
+        .option-number {
+            background: var(--primary);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .botones-accion {
+                flex-direction: column;
+            }
+            
+            .survey-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+    
+    <script>
+        // Script para manejar pestañas
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar pestañas
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remover clase active de todas las pestañas y contenidos
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Agregar clase active a la pestaña y contenido seleccionados
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Mantener el script original para enlaces
+            let enlacesGenerados = [];
+            
+            // Elementos del generador de enlaces
+            const selectParticipante = document.getElementById('selectParticipanteEnlace');
+            const selectEncuesta = document.getElementById('selectEncuestaEnlace');
+            const btnGenerar = document.getElementById('btnGenerarEnlace');
+            const contenedorEnlaces = document.getElementById('contenedorEnlaces');
+            const sinEnlaces = document.getElementById('sinEnlaces');
+            
+            // Cargar participantes y encuestas
+            cargarParticipantesYEncuestas();
+            
+            // Generar enlace
+            btnGenerar.addEventListener('click', async function() {
+                const participanteId = selectParticipante.value;
+                const encuestaId = selectEncuesta.value;
+                
+                if (!participanteId || !encuestaId) {
+                    mostrarNotificacion('Por favor selecciona un participante y una encuesta', 'error');
+                    return;
+                }
+                
+                // Obtener datos del participante
+                const participante = await obtenerParticipante(participanteId);
+                const encuesta = await obtenerEncuesta(encuestaId);
+                
+                if (!participante || !encuesta) {
+                    mostrarNotificacion('Error al obtener datos del participante o encuesta', 'error');
+                    return;
+                }
+                
+                // Generar enlace
+                const baseUrl = window.location.origin + window.location.pathname;
+                const basePath = baseUrl.replace('admin-encuestas.html', '');
+                const enlace = `${basePath}votacion.html?email=${encodeURIComponent(participante.email)}&encuesta_id=${encuestaId}`;
+                
+                // Agregar a la lista de enlaces generados
+                const enlaceData = {
+                    id: Date.now(),
+                    participante: participante,
+                    encuesta: encuesta,
+                    enlace: enlace,
+                    fecha: new Date().toLocaleString('es-ES')
+                };
+                
+                enlacesGenerados.unshift(enlaceData); // Agregar al principio
+                
+                // Mostrar enlaces
+                mostrarEnlacesGenerados();
+                
+                // Ocultar mensaje "sin enlaces"
+                sinEnlaces.style.display = 'none';
+                
+                // Desplazar a la vista
+                contenedorEnlaces.scrollIntoView({ behavior: 'smooth' });
+                
+                mostrarNotificacion('Enlace generado exitosamente', 'success');
+            });
+            
+            async function cargarParticipantesYEncuestas() {
+                try {
+                    // Cargar participantes
+                    const { data: participantes } = await supabase
+                        .from('participantes')
+                        .select('id, email, nombre, apellido')
+                        .order('created_at', { ascending: false });
+                    
+                    selectParticipante.innerHTML = '<option value="">Selecciona un participante</option>';
+                    participantes.forEach(p => {
+                        const option = document.createElement('option');
+                        option.value = p.id;
+                        option.textContent = `${p.nombre} ${p.apellido} (${p.email})`;
+                        selectParticipante.appendChild(option);
+                    });
+                    
+                    // Cargar encuestas activas
+                    const { data: encuestas } = await supabase
+                        .from('encuestas')
+                        .select('id, titulo')
+                        .eq('activa', true)
+                        .order('created_at', { ascending: false });
+                    
+                    selectEncuesta.innerHTML = '<option value="">Selecciona una encuesta</option>';
+                    encuestas.forEach(e => {
+                        const option = document.createElement('option');
+                        option.value = e.id;
+                        option.textContent = e.titulo;
+                        selectEncuesta.appendChild(option);
+                    });
+                    
+                } catch (error) {
+                    console.error('Error cargando datos:', error);
+                    mostrarNotificacion('Error al cargar participantes y encuestas', 'error');
+                }
+            }
+            
+            async function obtenerParticipante(id) {
+                try {
+                    const { data } = await supabase
+                        .from('participantes')
+                        .select('*')
+                        .eq('id', id)
+                        .single();
+                    return data;
+                } catch (error) {
+                    console.error('Error obteniendo participante:', error);
+                    return null;
+                }
+            }
+            
+            async function obtenerEncuesta(id) {
+                try {
+                    const { data } = await supabase
+                        .from('encuestas')
+                        .select('*')
+                        .eq('id', id)
+                        .single();
+                    return data;
+                } catch (error) {
+                    console.error('Error obteniendo encuesta:', error);
+                    return null;
+                }
+            }
+            
+            function mostrarEnlacesGenerados() {
+                if (enlacesGenerados.length === 0) {
+                    sinEnlaces.style.display = 'block';
+                    contenedorEnlaces.innerHTML = '<div id="sinEnlaces" class="empty-state"><i class="fas fa-envelope-open-text"></i><h3>No hay enlaces generados</h3><p>Selecciona un participante y una encuesta para generar enlaces de votación</p></div>';
+                    return;
+                }
+                
+                let html = '<h3 style="margin-bottom: 1.5rem; color: var(--dark);">📬 Enlaces Generados</h3>';
+                
+                enlacesGenerados.forEach((item, index) => {
+                    html += `
+                        <div class="enlace-contenedor">
+                            <div class="enlace-header">
+                                <h4><i class="fas fa-link"></i> Enlace ${index + 1}</h4>
+                                <small style="color: var(--gray);">${item.fecha}</small>
+                            </div>
+                            
+                            <div class="participante-info">
+                                <p><strong><i class="fas fa-user"></i> Participante:</strong> ${item.participante.nombre} ${item.participante.apellido}</p>
+                                <p><strong><i class="fas fa-envelope"></i> Correo:</strong> ${item.participante.email}</p>
+                                <p><strong><i class="fas fa-poll-h"></i> Encuesta:</strong> ${item.encuesta.titulo}</p>
+                            </div>
+                            
+                            <div class="enlace-codigo" id="enlaceTexto-${item.id}">
+                                ${item.enlace}
+                            </div>
+                            
+                            <div class="botones-accion">
+                                <button class="btn-correo" onclick="enviarPorCorreo('${item.participante.email}', '${item.participante.nombre}', '${item.encuesta.titulo}', '${item.enlace}')">
+                                    <i class="fas fa-paper-plane"></i> Enviar por Correo
+                                </button>
+                                
+                                <button class="btn-copiar" onclick="copiarEnlace('${item.id}', '${item.enlace}')">
+                                    <i class="fas fa-copy"></i> Copiar Enlace
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                // Agregar botón para limpiar todos
+                if (enlacesGenerados.length > 1) {
+                    html += `
+                        <div style="text-align: center; margin-top: 1.5rem;">
+                            <button onclick="limpiarEnlaces()" class="btn btn-danger">
+                                <i class="fas fa-trash-alt"></i> Limpiar Todos los Enlaces
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                contenedorEnlaces.innerHTML = html;
+            }
+            
+            function mostrarNotificacion(mensaje, tipo = 'info') {
+                // Crear notificación temporal
+                const notificacion = document.createElement('div');
+                notificacion.className = `alert alert-${tipo}`;
+                notificacion.style.position = 'fixed';
+                notificacion.style.top = '20px';
+                notificacion.style.right = '20px';
+                notificacion.style.zIndex = '1000';
+                notificacion.style.maxWidth = '350px';
+                notificacion.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+                notificacion.innerHTML = `
+                    <div class="alert-icon">
+                        <i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'error' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                    </div>
+                    <div class="alert-content">
+                        <p class="alert-message">${mensaje}</p>
+                    </div>
+                `;
+                
+                document.body.appendChild(notificacion);
+                
+                // Eliminar después de 5s
+                setTimeout(() => {
+                    notificacion.style.opacity = '0';
+                    notificacion.style.transform = 'translateX(100px)';
+                    setTimeout(() => notificacion.remove(), 300);
+                }, 5000);
+            }
+        });
+        
+        // Funciones globales para enlaces
+        function enviarPorCorreo(email, nombre, encuestaTitulo, enlace) {
+            const asunto = `Invitación a votar: ${encuestaTitulo}`;
+            const cuerpo = `Hola ${nombre},\n\nHas sido invitado(a) a votar en: "${encuestaTitulo}"\n\nTu enlace único de votación es:\n${enlace}\n\nEste enlace es personal e intransferible. Solo puedes votar una vez.\n\nSaludos,\nSistema de Encuestas - EncuestaPro`;
+            
+            // URL para abrir Gmail con todo prellenado
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+            
+            // Abrir en nueva pestaña
+            window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+            
+            // Mostrar confirmación
+            alert(`✉️ Se abrió Gmail para enviar a:\n${nombre}\n${email}\n\nRevisa y envía el correo.`);
+        }
+        
+        function copiarEnlace(id, enlace) {
+            navigator.clipboard.writeText(enlace).then(() => {
+                // Cambiar texto del botón temporalmente
+                const boton = document.querySelector(`button[onclick="copiarEnlace('${id}', '${enlace}')"]`);
+                const textoOriginal = boton.innerHTML;
+                boton.innerHTML = '<i class="fas fa-check"></i> ¡Copiado!';
+                boton.style.background = '#2E8B47';
+                
+                setTimeout(() => {
+                    boton.innerHTML = textoOriginal;
+                    boton.style.background = '#34A853';
+                }, 2000);
+            }).catch(err => {
+                alert('Error al copiar: ' + err.message);
+            });
+        }
+        
+        function limpiarEnlaces() {
+            if (confirm('¿Eliminar todos los enlaces generados?')) {
+                enlacesGenerados = [];
+                mostrarEnlacesGenerados();
+                document.getElementById('sinEnlaces').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
