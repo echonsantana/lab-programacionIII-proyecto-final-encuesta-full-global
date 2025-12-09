@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - FullGlobal</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/componentes.css">
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/componentes.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Estilos mejorados para dashboard */
@@ -399,7 +399,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-config.js"></script>
+    <script src="./js/supabase-config.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('📊 Dashboard cargado');
@@ -457,10 +457,10 @@
                         .limit(3);
                     
                     // Obtener votos recientes
-                    const { data: votos } = await supabase
+                    const { data: votos, error: errorVotos } = await supabase
                         .from('votos')
-                        .select('*, opciones(nombre_opcion), encuestas(titulo)')
-                        .order('created_at', { ascending: false })
+                        .select(`*,opciones (nombre_opcion),encuestas (titulo)`)
+                        .order('id', { ascending: false })
                         .limit(3);
                     
                     let html = '';
